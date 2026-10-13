@@ -10,18 +10,20 @@ datasource db {
 model Categorie {
        id             Int @id @default(autoincrement())
        nom            String
-       produits       Produit[]
+       produit        Produit[]
        createdAt      DateTime @default(now())
 }
 
 model Produit {
-       id            Int @id @default(autoincrement())
-       nomProduit    String
-       prixProduit   Float 
-       quantiteStock Int
+       id              Int @id @default(autoincrement())
+       nomProduit      String
+       prixProduit     Float 
+       quantiteStock   Int
        categorieId     Int 
        reapprovisionnement      Reapprovisionnement[]
        vente     Vente[]
+       creance   Creance[]
+       dette     Dette[]
        categorie Categorie @relation(fields: [categorieId] , references: [id])
        createdAt  DateTime @default(now())
 }
@@ -31,16 +33,68 @@ model Reapprovisionnement {
       produitId      Int
       quantite       Int
       createdAt            DateTime @default (now())
-
       produit Produit @relation(fields: [produitId], references: [id])
 }
 
 model Vente  {
       id         Int @id @default(autoincrement())
-      clientName String
+      clientId   Int
       produitId Int 
       quantite Int
+      prixProduit Float
       montantTotal Float
       createdAt DateTime @default(now())
       produit Produit @relation(fields : [produitId], references : [id])
+      client Client @relation(fields : [clientId] , references : [id])
+}
+
+model Client {
+      id             Int @id @default(autoincrement())
+      clientName     String
+      clientTel      String ?
+      clientEmail    String ?
+      vente          Vente[]
+      creance        Creance[]
+      createdAt      DateTime @default(now())
+}
+
+model Creance {
+      id            Int @id @default(autoincrement())
+      produitId     Int
+      clientId      Int 
+      quantite      Int
+      prixProduit   Float
+      clientTel             String ?
+      profession            String ?
+      clientEmail           String ?
+      montantTotal Float
+      statusCreance         String
+      createdAt    DateTime @default(now())
+      dateSolde    DateTime 
+      produit Produit @relation(fields:[produitId] , references: [id])
+      client Client @relation(fields : [clientId] , references : [id])
+}
+
+model Fournisseur {
+     id             Int @id @default(autoincrement())
+     nomFournisseur String  
+     contact        String
+     email          String
+     siege          String ?
+     dette     Dette[]
+     createdAt      DateTime @default(now())
+}
+
+model Dette {
+     id             Int @id @default(autoincrement())
+     fournisseurId  Int
+     produitId      Int 
+     quantite       Int 
+     prixUnitaire   Float
+     montant        Float
+     createdAt      DateTime @default(now())
+     dateRembourse  DateTime
+     statusDette    String
+     produit  Produit @relation(fields: [produitId] , references: [id])
+     fournisseur Fournisseur @relation(fields: [fournisseurId] , references:[id])
 }

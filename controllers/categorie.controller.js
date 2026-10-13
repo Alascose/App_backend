@@ -3,12 +3,14 @@ const prisma = new PrismaClient();
 export const getCategorie = async (req, res) => {
   try {
     const categories = await prisma.categorie.findMany({
-      include: { produits: true },
+      include: { produit: true },
       orderBy: { createdAt: "desc" },
     });
     res.json(categories);
   } catch (error) {
-    res.status(500).json({ error: "Erreur GET categories" });
+    res
+      .status(500)
+      .json({ message: "Erreur GET categories", error: error.message });
   }
 };
 
@@ -21,11 +23,17 @@ export const createCategorie = async (req, res) => {
       .json({ message: "Tous les champs doivent être remplir!" });
   }
   try {
-    const categories = await prisma.categorie.create({
+    const categorie = await prisma.categorie.create({
       data: { nom },
     });
-    res.json(categories);
-  } catch (err) {
-    res.status(500).json({ err: "Erreur POST categorie" });
+    const completeCategorie = await prisma.categorie.findUnique({
+      where: { id: categorie.id },
+      include: { produit: true },
+    });
+    res.status(201).json(completeCategorie);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Erreur POST categorie", error: error.message });
   }
 };

@@ -10,7 +10,9 @@ export const getProduit = async (req, res) => {
     });
     res.json(produits);
   } catch (error) {
-    res.status(500).json({ error: "Erreur GET produits" });
+    res
+      .status(500)
+      .json({ message: "Erreur GET produits", error: error.message });
   }
 };
 
@@ -23,7 +25,7 @@ export const createProduit = async (req, res) => {
       .json({ message: "Tous les champs doivent être remplir." });
   }
   try {
-    const produits = await prisma.produit.create({
+    const produit = await prisma.produit.create({
       data: {
         nomProduit,
         prixProduit: Number(prixProduit),
@@ -31,8 +33,14 @@ export const createProduit = async (req, res) => {
         categorieId: Number(categorieId),
       },
     });
-    res.json(produits);
+    const completeProduit = await prisma.produit.findUnique({
+      where: { id: produit.id },
+      include: { categorie: true },
+    });
+    res.status(201).json(completeProduit);
   } catch (error) {
-    res.status(500).json({ error: "Erreur POST produit" });
+    res
+      .status(500)
+      .json({ message: "Erreur POST produit", error: error.message });
   }
 };

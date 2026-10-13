@@ -20,7 +20,7 @@ export const createReapprovisionnement = async (req, res) => {
         quantite: Number(quantite),
       },
     });
-    const produitMisAjour = await prisma.produit.update({
+    await prisma.produit.update({
       where: { id: Number(produitId) },
       data: {
         quantiteStock: {
@@ -28,11 +28,11 @@ export const createReapprovisionnement = async (req, res) => {
         },
       },
     });
-    res.status(201).json({
-      message: "Reapprovisionnement effectué avec succès!",
-      reapprovisionnement,
-      produit: produitMisAjour,
-    });
+    const valideReapprovisionnement =
+      await prisma.reapprovisionnement.findUnique({
+        where: { id: reapprovisionnement.id },
+      });
+    res.status(201).json(valideReapprovisionnement);
   } catch (error) {
     res.status(500).json({
       message: "Erreur de reapprovisionnement!",
