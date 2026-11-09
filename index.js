@@ -7,7 +7,9 @@ import venteRoute from "./routes/vente.route.js";
 import clientRoute from "./routes/client.route.js";
 import creanceRoute from "./routes/creance.route.js";
 import detteRoute from "./routes/dette.route.js";
+import creanceSoldeRoute from "./routes/creanceSolde.route.js";
 import fournisseurRoute from "./routes/fournisseur.route.js";
+import detteRembourseRoute from "./routes/detteRembourse.route.js";
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -19,6 +21,8 @@ app.use("/clients", clientRoute);
 app.use("/creances", creanceRoute);
 app.use("/dettes", detteRoute);
 app.use("/fournisseurs", fournisseurRoute);
+app.use("/creanceSoldes", creanceSoldeRoute);
+app.use("/detteRembourses", detteRembourseRoute);
 app.listen(4000, () => {
   console.log("API lancer sur le port: http://localhost:4000");
 });

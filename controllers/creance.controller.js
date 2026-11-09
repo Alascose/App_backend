@@ -6,9 +6,9 @@ export const getCreance = async (req, res) => {
       include: { produit: true, client: true },
       orderBy: { createdAt: "desc" },
     });
-    res.json(creance);
+    return res.status(201).json(creance);
   } catch (error) {
-    res
+    return res
       .status(500)
       .json({ message: "Erreur GET creances", error: error.message });
   }
@@ -23,6 +23,8 @@ export const createCreance = async (req, res) => {
     quantite,
     profession,
     montantTotal,
+    montantVerse,
+    montantRestant,
     statusCreance = "En cour",
     dateSolde,
   } = req.body;
@@ -31,7 +33,6 @@ export const createCreance = async (req, res) => {
     !produitId ||
     !prixProduit ||
     !quantite ||
-    !profession ||
     !montantTotal ||
     !statusCreance ||
     !dateSolde
@@ -66,6 +67,10 @@ export const createCreance = async (req, res) => {
         quantite: Number(quantite),
         profession,
         montantTotal: Number(montantTotal),
+        montantVerse: montantVerse ? Number(montantVerse) : 0,
+        montantRestant: montantRestant
+          ? Number(montantRestant)
+          : Number(montantTotal),
         statusCreance: "En cour",
         dateSolde: new Date(dateSolde),
       },
@@ -99,6 +104,8 @@ export const editeCreance = async (req, res) => {
     quantite,
     profession,
     montantTotal,
+    montantVerse,
+    montantRestant,
     statusCreance = "En cour",
     dateSolde,
   } = req.body;
@@ -124,8 +131,10 @@ export const editeCreance = async (req, res) => {
         quantite: Number(quantite),
         profession,
         montantTotal: Number(montantTotal),
+        montantVerse: montantVerse ? Number(montantVerse) : 0,
+        montantRestant: montantRestant ? Number(montantRestant) : 0,
         statusCreance: "En cour",
-        dateSolde: dateSolde ? new Date(dateSolde) : null,
+        dateSolde: new Date(dateSolde),
       },
     });
     const completeUpdate = await prisma.creance.findUnique({
@@ -160,12 +169,12 @@ export const deleteCreance = async (req, res) => {
     const creanceDelete = await prisma.creance.delete({
       where: { id },
     });
-    res.status(200).json({
+    return res.status(200).json({
       message: "Creance supprimer et stock reatabli avec succès!",
       creanceDelete,
     });
   } catch (error) {
-    res
+    return res
       .status(500)
       .json({ message: "Erreur DELETE BACK creance", error: error.message });
   }

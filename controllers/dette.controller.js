@@ -21,6 +21,8 @@ export const createDette = async (req, res) => {
     quantite,
     prixUnitaire,
     montant,
+    montantRembourse,
+    montantReste,
     statusDette = "En cous",
     dateRembourse,
   } = req.body;
@@ -56,6 +58,8 @@ export const createDette = async (req, res) => {
         quantite: Number(quantite),
         prixUnitaire: Number(prixUnitaire),
         montant: montant,
+        montantRembourse: montantRembourse ? Number(montantRembourse) : null,
+        montantReste: montantReste ? Number(montantReste) : Number(montant),
         statusDette: "En cour",
         dateRembourse: new Date(dateRembourse),
       },
